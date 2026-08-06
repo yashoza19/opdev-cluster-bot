@@ -1,0 +1,124 @@
+# Schedules use America/New_York. Job entrypoints land in feature/cron-jobs;
+# these CronJobs are ready once that image includes the console scripts.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: opdev-remind-hibernate
+  namespace: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+    app.kubernetes.io/component: remind-hibernate
+spec:
+  timeZone: America/New_York
+  schedule: "0 17 * * 1-5"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: opdev-cluster-bot
+            app.kubernetes.io/component: remind-hibernate
+        spec:
+          serviceAccountName: opdev-cluster-bot
+          restartPolicy: OnFailure
+          containers:
+            - name: remind
+              image: quay.io/example/opdev-cluster-bot:latest
+              imagePullPolicy: Always
+              command: ["opdev-remind-hibernate"]
+              envFrom:
+                - configMapRef:
+                    name: opdev-cluster-bot-config
+                - secretRef:
+                    name: opdev-cluster-bot-slack
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: opdev-weekend-hibernate
+  namespace: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+    app.kubernetes.io/component: weekend-hibernate
+spec:
+  timeZone: America/New_York
+  schedule: "0 18 * * 5"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: opdev-cluster-bot
+            app.kubernetes.io/component: weekend-hibernate
+        spec:
+          serviceAccountName: opdev-cluster-bot
+          restartPolicy: OnFailure
+          containers:
+            - name: weekend-hibernate
+              image: quay.io/example/opdev-cluster-bot:latest
+              imagePullPolicy: Always
+              command: ["opdev-weekend-hibernate"]
+              envFrom:
+                - configMapRef:
+                    name: opdev-cluster-bot-config
+                - secretRef:
+                    name: opdev-cluster-bot-slack
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: opdev-monday-resume
+  namespace: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+    app.kubernetes.io/component: monday-resume
+spec:
+  timeZone: America/New_York
+  schedule: "0 8 * * 1"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: opdev-cluster-bot
+            app.kubernetes.io/component: monday-resume
+        spec:
+          serviceAccountName: opdev-cluster-bot
+          restartPolicy: OnFailure
+          containers:
+            - name: monday-resume
+              image: quay.io/example/opdev-cluster-bot:latest
+              imagePullPolicy: Always
+              command: ["opdev-monday-resume"]
+              envFrom:
+                - configMapRef:
+                    name: opdev-cluster-bot-config
+                - secretRef:
+                    name: opdev-cluster-bot-slack
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]

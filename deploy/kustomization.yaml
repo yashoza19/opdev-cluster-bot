@@ -1,0 +1,19 @@
+# Apply order for hub install (after building/pushing the image):
+#   oc apply -f deploy/namespace.yaml
+#   oc apply -f deploy/rbac.yaml
+#   oc apply -f deploy/configmap.yaml
+#   # create Slack secret (from example) and AWS/pull/ssh secrets in opdev-cluster-bot-creds
+#   oc apply -f deploy/deployment.yaml
+#   oc apply -f deploy/cronjobs.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - rbac.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - cronjobs.yaml
+images:
+  - name: quay.io/example/opdev-cluster-bot
+    newName: quay.io/example/opdev-cluster-bot
+    newTag: latest

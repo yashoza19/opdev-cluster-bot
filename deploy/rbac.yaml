@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: opdev-cluster-bot
+  namespace: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+rules:
+  - apiGroups: ["cluster.open-cluster-management.io"]
+    resources: ["managedclusters"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: ["hive.openshift.io"]
+    resources: ["clusterimagesets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["hive.openshift.io"]
+    resources: ["clusterdeployments", "machinepools"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: ["agent.open-cluster-management.io"]
+    resources: ["klusterletaddonconfigs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: opdev-cluster-bot
+subjects:
+  - kind: ServiceAccount
+    name: opdev-cluster-bot
+    namespace: opdev-cluster-bot
+---
+# Allow reading shared cloud/pull/ssh secrets from the creds namespace
+# and creating secrets in any cluster namespace the bot provisions.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: opdev-cluster-bot-secrets
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: opdev-cluster-bot-secrets
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: opdev-cluster-bot-secrets
+subjects:
+  - kind: ServiceAccount
+    name: opdev-cluster-bot
+    namespace: opdev-cluster-bot

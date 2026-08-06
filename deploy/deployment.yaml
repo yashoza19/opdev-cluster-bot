@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opdev-cluster-bot
+  namespace: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+    app.kubernetes.io/component: slack-bot
+spec:
+  # Socket Mode should run a single replica
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opdev-cluster-bot
+      app.kubernetes.io/component: slack-bot
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: opdev-cluster-bot
+        app.kubernetes.io/component: slack-bot
+    spec:
+      serviceAccountName: opdev-cluster-bot
+      containers:
+        - name: bot
+          image: quay.io/example/opdev-cluster-bot:latest
+          imagePullPolicy: Always
+          command: ["opdev-cluster-bot"]
+          envFrom:
+            - configMapRef:
+                name: opdev-cluster-bot-config
+            - secretRef:
+                name: opdev-cluster-bot-slack
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

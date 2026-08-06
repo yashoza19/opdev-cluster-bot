@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+    app.kubernetes.io/part-of: opdev-cluster-bot
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opdev-cluster-bot-creds
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot-creds
+    app.kubernetes.io/part-of: opdev-cluster-bot
