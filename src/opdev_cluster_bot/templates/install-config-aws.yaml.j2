@@ -9,8 +9,8 @@ controlPlane:
   platform:
     aws:
       type: {{ instance_type }}
-compute:
 {% if compute_replicas > 0 %}
+compute:
 - hyperthreading: Enabled
   name: worker
   replicas: {{ compute_replicas }}
@@ -18,7 +18,7 @@ compute:
     aws:
       type: {{ instance_type }}
 {% else %}
-[]
+compute: []
 {% endif %}
 networking:
   clusterNetwork:
