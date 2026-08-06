@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "opdev-cluster-bot"
+version = "0.1.0"
+description = "Slack bot for ACM/Hive OpenShift cluster lifecycle on AWS"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "slack-bolt>=1.21.0",
+  "slack-sdk>=3.33.0",
+  "kubernetes>=31.0.0",
+  "Jinja2>=3.1.4",
+  "PyYAML>=6.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "pytest-cov>=5.0.0",
+]
+
+[project.scripts]
+opdev-cluster-bot = "opdev_cluster_bot.app:main"
+opdev-remind-hibernate = "jobs.remind_hibernate:main"
+opdev-weekend-hibernate = "jobs.weekend_hibernate:main"
+opdev-monday-resume = "jobs.monday_resume:main"
+
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["opdev_cluster_bot*", "jobs*"]
+
+[tool.setuptools.package-data]
+opdev_cluster_bot = ["templates/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
