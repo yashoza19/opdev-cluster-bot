@@ -48,27 +48,32 @@ pip install -e ".[dev]"
 pytest
 ```
 
-## Slack app setup
+## Documentation
 
-See [docs/slack-app-setup.md](docs/slack-app-setup.md).
+| Doc | Description |
+|-----|-------------|
+| [docs/design.md](docs/design.md) | Architecture and design decisions |
+| [docs/slack-app-setup.md](docs/slack-app-setup.md) | Slack Socket Mode app configuration |
+| [docs/hub-smoke-checklist.md](docs/hub-smoke-checklist.md) | Hub deploy verification |
+
+## Makefile
+
+```bash
+make help          # list targets
+make install       # venv + editable install
+make test          # pytest
+make run           # Socket Mode bot
+make docker-build  # IMAGE=... TAG=0.1.0  (buildx, linux/amd64, --load)
+make docker-push   # buildx build --platform linux/amd64 --push
+make deploy        # oc apply manifests (secrets separate)
+```
 
 ## Deploy to the ACM hub
 
-1. Build and push the image (update `deploy/kustomization.yaml` / `deployment.yaml` image).
+1. Build and push the image (`make docker-build docker-push`, then update image refs in `deploy/`).
 2. Create Slack + AWS/pull/ssh secrets (see `deploy/*.example`).
 3. Edit `deploy/configmap.yaml` (`BASE_DOMAIN`, `AWS_REGION`, optional `REMINDER_CHANNEL`).
-4. Apply:
-
-```bash
-oc apply -f deploy/namespace.yaml
-oc apply -f deploy/rbac.yaml
-oc apply -f deploy/configmap.yaml
-# create secrets (do not commit real values)
-oc apply -f deploy/deployment.yaml
-oc apply -f deploy/cronjobs.yaml
-# or: oc apply -k deploy/
-```
-
+4. Apply: `make deploy` (or `oc apply -k deploy/`).
 5. Follow [docs/hub-smoke-checklist.md](docs/hub-smoke-checklist.md).
 
 ## Safety
