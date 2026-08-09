@@ -9,16 +9,21 @@ controlPlane:
   platform:
     aws:
       type: {{ instance_type }}
-{% if compute_replicas > 0 %}
+{#
+  Always emit an explicit worker pool. An empty `compute: []` is treated by
+  openshift-install as "use HA defaults" (replicas=3, default instance type).
+  SNO requires compute.replicas: 0 per OpenShift docs.
+#}
 compute:
 - hyperthreading: Enabled
   name: worker
   replicas: {{ compute_replicas }}
+{% if compute_replicas > 0 %}
   platform:
     aws:
       type: {{ instance_type }}
 {% else %}
-compute: []
+  platform: {}
 {% endif %}
 networking:
   clusterNetwork:
