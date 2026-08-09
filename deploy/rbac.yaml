@@ -44,6 +44,23 @@ subjects:
     name: opdev-cluster-bot
     namespace: opdev-cluster-bot
 ---
+# ACM requires ManagedClusterSet permissions to create ClusterDeployments /
+# ManagedClusters into a set (webhook denies empty clusterset).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: opdev-cluster-bot-clusterset-default
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: open-cluster-management:managedclusterset:admin:default
+subjects:
+  - kind: ServiceAccount
+    name: opdev-cluster-bot
+    namespace: opdev-cluster-bot
+---
 # Allow reading shared cloud/pull/ssh secrets from the creds namespace
 # and creating secrets in any cluster namespace the bot provisions.
 apiVersion: rbac.authorization.k8s.io/v1

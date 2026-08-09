@@ -30,7 +30,19 @@ def load_api_client() -> client.ApiClient:
 
 
 def get_dynamic_client() -> DynamicClient:
-    return DynamicClient(load_api_client())
+    # Prefer TMPDIR (emptyDir /tmp in the Deployment); fall back to in-memory
+    # discovery if no writable temp dir is available.
+    import os
+    import tempfile
+
+    cache_file = None
+    try:
+        tempfile.gettempdir()
+    except FileNotFoundError:
+        cache_file = False
+    else:
+        cache_file = os.path.join(tempfile.gettempdir(), "opdev_k8s_discover.json")
+    return DynamicClient(load_api_client(), cache_file=cache_file)
 
 
 def resource(api_version: str, kind: str):
