@@ -51,6 +51,16 @@ oc -n opdev-cluster-bot logs deploy/opdev-cluster-bot -f
    - [ ] Reminder posts to `REMINDER_CHANNEL` or owner DM with Hibernate button
    - [ ] Button handled by the live Deployment
 
+6. **Real provision follow-through** (after spin succeeds)
+   - [ ] Wait until `ClusterDeployment` reports installed / provision complete
+   - [ ] Confirm Hive wrote admin kubeconfig + password secrets in the cluster namespace
+   - [ ] `ManagedCluster` joins / becomes Available
+   - [ ] Hibernate → resume that spoke
+   - [ ] Trigger remind / weekend / monday Jobs against it
+   - [ ] Clean up when done (manual delete until `/destroy` exists)
+
+See [production-roadmap.md](production-roadmap.md) for the full production feature backlog.
+
 ## Rollback / cleanup
 
 - [ ] Scale Deployment to 0 if the bot misbehaves: `oc -n opdev-cluster-bot scale deploy/opdev-cluster-bot --replicas=0`

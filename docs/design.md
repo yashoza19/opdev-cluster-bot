@@ -86,9 +86,11 @@ Injected via ConfigMap + Secret (see `deploy/`):
 - ClusterPool / claim flow
 - HTTP Events API / multi-replica HA
 - Cost estimates in Slack messages
+- Ready-state DM of kubeconfig / kubeadmin password (tracked as P0 — see roadmap)
 
 ## Related docs
 
+- [Production roadmap & feature backlog](production-roadmap.md)
 - [Slack app setup](slack-app-setup.md)
 - [Hub smoke checklist](hub-smoke-checklist.md)
 - [README](../README.md)

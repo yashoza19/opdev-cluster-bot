@@ -20,29 +20,46 @@ spec:
         app.kubernetes.io/component: slack-bot
     spec:
       serviceAccountName: opdev-cluster-bot
+      # Small hub: allow scheduling on control-plane when workers are full
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
       containers:
         - name: bot
-          image: quay.io/example/opdev-cluster-bot:latest
+          image: quay.io/yoza/opdev-cluster-bot:latest
           imagePullPolicy: Always
           command: ["opdev-cluster-bot"]
+          env:
+            - name: TMPDIR
+              value: /tmp
           envFrom:
             - configMapRef:
                 name: opdev-cluster-bot-config
             - secretRef:
                 name: opdev-cluster-bot-slack
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 10m
+              memory: 64Mi
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: 200m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             capabilities:
               drop: ["ALL"]
+      volumes:
+        - name: tmp
+          emptyDir: {}
       securityContext:
         runAsNonRoot: true
         seccompProfile:

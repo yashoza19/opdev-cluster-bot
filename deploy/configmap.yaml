@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: opdev-cluster-bot
 data:
   AWS_REGION: "us-east-1"
-  BASE_DOMAIN: "dev.example.com"
+  BASE_DOMAIN: "opdev.io"
   CREDS_NAMESPACE: "opdev-cluster-bot-creds"
   AWS_CREDS_SECRET: "aws-creds"
   PULL_SECRET_NAME: "pull-secret"

@@ -1,4 +1,4 @@
-IMAGE ?= quay.io/example/opdev-cluster-bot
+IMAGE ?= quay.io/yoza/opdev-cluster-bot
 TAG ?= latest
 PLATFORM ?= linux/amd64
 NAMESPACE ?= opdev-cluster-bot

@@ -13,3 +13,6 @@ htmlcov/
 *.yaml.local
 deploy/secret.yaml
 .DS_Store
+*kubeconfig*.yaml
+*.kubeconfig
+tokens.txt

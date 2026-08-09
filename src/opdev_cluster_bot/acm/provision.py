@@ -199,6 +199,8 @@ def build_manifests(
     labels = {
         LABEL_MANAGED_BY: settings.managed_by_label,
         LABEL_WEEKEND_HIBERNATE: "true",
+        # Required by ACM OCM webhook for ManagedClusterSet assignment
+        "cluster.open-cluster-management.io/clusterset": "default",
     }
     annotations = {
         ANNOTATION_TOPOLOGY: topology,

@@ -26,7 +26,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: remind
-              image: quay.io/example/opdev-cluster-bot:latest
+              image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
               command: ["opdev-remind-hibernate"]
               envFrom:
@@ -67,7 +67,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: weekend-hibernate
-              image: quay.io/example/opdev-cluster-bot:latest
+              image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
               command: ["opdev-weekend-hibernate"]
               envFrom:
@@ -108,7 +108,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: monday-resume
-              image: quay.io/example/opdev-cluster-bot:latest
+              image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
               command: ["opdev-monday-resume"]
               envFrom:
