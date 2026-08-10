@@ -15,19 +15,19 @@ metadata:
 rules:
   - apiGroups: ["cluster.open-cluster-management.io"]
     resources: ["managedclusters"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["hive.openshift.io"]
     resources: ["clusterimagesets"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["hive.openshift.io"]
     resources: ["clusterdeployments", "machinepools"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["agent.open-cluster-management.io"]
     resources: ["klusterletaddonconfigs"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: [""]
     resources: ["namespaces"]
-    verbs: ["get", "list", "watch", "create"]
+    verbs: ["get", "list", "watch", "create", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

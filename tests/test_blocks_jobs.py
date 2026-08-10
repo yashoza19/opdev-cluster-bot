@@ -7,6 +7,7 @@ from opdev_cluster_bot.blocks import HELP_TEXT, confirm_power_blocks, hibernate_
 def test_help_text_mentions_spin():
     assert "spin" in HELP_TEXT
     assert "keep-weekend" in HELP_TEXT
+    assert "destroy" in HELP_TEXT
 
 
 def test_confirm_power_blocks():

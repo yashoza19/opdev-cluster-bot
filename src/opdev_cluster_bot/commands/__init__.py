@@ -9,10 +9,11 @@ from typing import Any
 from slack_bolt import Ack, BoltContext, Say
 from slack_sdk import WebClient
 
+from opdev_cluster_bot.acm.destroy import cluster_for_destroy
 from opdev_cluster_bot.acm.inventory import get_cluster, list_clusters
 from opdev_cluster_bot.acm.power import PowerError, set_weekend_opt_out
 from opdev_cluster_bot.acm.provision import ProvisionError, ProvisionRequest, provision_cluster
-from opdev_cluster_bot.blocks import HELP_TEXT, confirm_power_blocks
+from opdev_cluster_bot.blocks import HELP_TEXT, confirm_destroy_blocks, confirm_power_blocks
 from opdev_cluster_bot.config import Settings
 from opdev_cluster_bot.identity import is_authorized, resolve_email
 
@@ -52,6 +53,7 @@ def handle_opdev_command(
         "spin": _cmd_spin,
         "hibernate": _cmd_hibernate,
         "resume": _cmd_resume,
+        "destroy": _cmd_destroy,
         "status": _cmd_status,
         "keep-weekend": _cmd_keep_weekend,
     }
@@ -206,6 +208,62 @@ def _cmd_hibernate(**kwargs: Any) -> None:
 
 def _cmd_resume(**kwargs: Any) -> None:
     _power_confirm(verb="resume", action_id="confirm_resume", **kwargs)
+
+
+def _cmd_destroy(**kwargs: Any) -> None:
+    args: list[str] = kwargs["args"]
+    if len(args) != 1:
+        _reply(
+            kwargs["client"],
+            kwargs["channel_id"],
+            kwargs["user_id"],
+            "Usage: `/opdev-cluster-bot destroy <name>`",
+            kwargs.get("response_url"),
+        )
+        return
+    name = args[0]
+    info = cluster_for_destroy(name, kwargs["settings"])
+    if info is None:
+        _reply(
+            kwargs["client"],
+            kwargs["channel_id"],
+            kwargs["user_id"],
+            f"Cluster `{name}` not found.",
+            kwargs.get("response_url"),
+        )
+        return
+    if not info.managed_by_bot:
+        _reply(
+            kwargs["client"],
+            kwargs["channel_id"],
+            kwargs["user_id"],
+            f"Refusing to destroy `{info.name}`: not managed by this bot.",
+            kwargs.get("response_url"),
+        )
+        return
+    if not is_authorized(
+        actor_slack_id=kwargs["user_id"],
+        owner_slack_id=info.owner_slack_id,
+        settings=kwargs["settings"],
+        client=kwargs["client"],
+    ):
+        _reply(
+            kwargs["client"],
+            kwargs["channel_id"],
+            kwargs["user_id"],
+            f"Not authorized to destroy `{info.name}`.",
+            kwargs.get("response_url"),
+        )
+        return
+    blocks = confirm_destroy_blocks(cluster_name=info.name)
+    _reply(
+        kwargs["client"],
+        kwargs["channel_id"],
+        kwargs["user_id"],
+        f"Confirm destroy for `{info.name}`",
+        kwargs.get("response_url"),
+        blocks=blocks,
+    )
 
 
 def _power_confirm(*, verb: str, action_id: str, **kwargs: Any) -> None:

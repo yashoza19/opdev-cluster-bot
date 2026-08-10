@@ -10,6 +10,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 from opdev_cluster_bot.actions import (
     handle_cancel_power_action,
+    handle_confirm_destroy,
     handle_confirm_hibernate,
     handle_confirm_resume,
 )
@@ -39,6 +40,7 @@ def create_app(settings: Settings | None = None) -> App:
     app.command("/opdev-cluster-bot")(handle_opdev_command)
     app.action("confirm_hibernate")(handle_confirm_hibernate)
     app.action("confirm_resume")(handle_confirm_resume)
+    app.action("confirm_destroy")(handle_confirm_destroy)
     app.action("cancel_power_action")(handle_cancel_power_action)
     return app
 

@@ -81,7 +81,6 @@ Injected via ConfigMap + Secret (see `deploy/`):
 
 ## Out of scope (MVP)
 
-- Destroy/deprovision command
 - Azure/GCP backends
 - ClusterPool / claim flow
 - HTTP Events API / multi-replica HA

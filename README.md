@@ -7,6 +7,7 @@ Slack bot for ACM/Hive OpenShift cluster lifecycle on AWS. Runs on the ACM hub c
 - Monitor Hive-provisioned managed clusters (`/opdev-cluster-bot list`, `status`)
 - Provision AWS clusters via Hive (`spin <version> <SNO|multinode> <instance-type> [name]`)
 - Hibernate / resume with Block Kit confirmation
+- Destroy / deprovision bot-managed clusters (`destroy <name>`, double confirm)
 - Weekday end-of-day hibernate reminders (17:00 America/New_York)
 - Friday auto-hibernate and Monday resume (opt out with `keep-weekend`)
 
@@ -19,6 +20,7 @@ Slack bot for ACM/Hive OpenShift cluster lifecycle on AWS. Runs on the ACM hub c
 | `/opdev-cluster-bot spin <ver> SNO\|multinode <itype> [name]` | Provision on AWS |
 | `/opdev-cluster-bot hibernate <name>` | Confirm then hibernate |
 | `/opdev-cluster-bot resume <name>` | Confirm then resume |
+| `/opdev-cluster-bot destroy <name>` | Confirm then deprovision (AWS teardown) |
 | `/opdev-cluster-bot status <name>` | Cluster details |
 | `/opdev-cluster-bot keep-weekend <name>` | Skip weekend auto-hibernate |
 
