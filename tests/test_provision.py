@@ -59,6 +59,11 @@ def test_build_manifests_sno():
     assert ns["metadata"]["annotations"]["opdev.io/topology"] == "SNO"
 
     install = manifests[1]["stringData"]["install-config.yaml"]
+    # SNO must use an explicit worker pool with replicas: 0.
+    # `compute: []` makes openshift-install default to 3 workers.
+    assert "compute: []" not in install
+    assert "name: worker" in install
+    assert "replicas: 0" in install
     assert "replicas: 1" in install
     assert "m5.2xlarge" in install
     assert "us-east-1" in install
