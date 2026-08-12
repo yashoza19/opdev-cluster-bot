@@ -8,6 +8,7 @@ from typing import Any
 from slack_bolt import Ack, BoltContext
 from slack_sdk import WebClient
 
+from opdev_cluster_bot.acm.destroy import DestroyError, cluster_for_destroy, destroy_cluster
 from opdev_cluster_bot.acm.inventory import get_cluster
 from opdev_cluster_bot.acm.power import PowerError, hibernate_cluster, resume_cluster
 from opdev_cluster_bot.config import Settings
@@ -38,6 +39,58 @@ def handle_confirm_resume(
 ) -> None:
     ack()
     _apply_power(body, client, context, verb="resume", apply=resume_cluster)
+
+
+def handle_confirm_destroy(
+    ack: Ack,
+    body: dict[str, Any],
+    client: WebClient,
+    context: BoltContext,
+) -> None:
+    ack()
+    settings = _settings(context)
+    user_id = body.get("user", {}).get("id") or ""
+    channel = body.get("channel", {}).get("id") or body.get("container", {}).get("channel_id")
+    actions = body.get("actions") or []
+    cluster_name = (actions[0].get("value") if actions else None) or ""
+    if not cluster_name:
+        return
+
+    info = cluster_for_destroy(cluster_name, settings)
+    if info is None:
+        _notify(client, channel, user_id, f"Cluster `{cluster_name}` not found.")
+        return
+    if not info.managed_by_bot:
+        _notify(
+            client,
+            channel,
+            user_id,
+            f"Refusing to destroy `{info.name}`: not managed by this bot.",
+        )
+        return
+    if not is_authorized(
+        actor_slack_id=user_id,
+        owner_slack_id=info.owner_slack_id,
+        settings=settings,
+        client=client,
+    ):
+        _notify(client, channel, user_id, f"Not authorized to destroy `{info.name}`.")
+        return
+
+    try:
+        result = destroy_cluster(info.name, settings)
+    except DestroyError as exc:
+        _notify(client, channel, user_id, str(exc))
+        return
+
+    logger.info("audit destroy user=%s cluster=%s", user_id, result.cluster_name)
+    text = f"Cluster `{result.cluster_name}` will be deleted by <@{user_id}>."
+    if result.dry_run:
+        text = f"Dry-run: cluster `{result.cluster_name}` would be deleted by <@{user_id}>."
+    if channel:
+        client.chat_postMessage(channel=channel, text=text)
+    else:
+        _notify(client, channel, user_id, text)
 
 
 def handle_cancel_power_action(

@@ -62,7 +62,7 @@ The bot does **not** yet read or DM those — that is a P0 below.
 
 - [ ] Manual Job from `opdev-remind-hibernate` → owner DM or `REMINDER_CHANNEL` + Hibernate button works
 - [ ] Manual Job from `opdev-weekend-hibernate` hibernates bot-managed Running clusters
-- [ ] Manual Job from `opdev-monday-resume` resumes weekend participants
+- [ ] Manual Job from `opdev-daily-resume` resumes all hibernating bot-managed clusters
 - [ ] Timezone / schedule correct on the hub (CronJob `schedule` + `TZ`)
 
 ### D. Ops / security
@@ -77,40 +77,42 @@ The bot does **not** yet read or DM those — that is a P0 below.
 
 ## Feature backlog
 
+Hub validation tracker: [#7](https://github.com/yashoza19/opdev-cluster-bot/issues/7).
+
 ### P0 — needed before broad team use
 
-| ID | Feature | Status | Notes |
-|----|---------|--------|-------|
-| P0-1 | **Ready notification + credentials DM** | `todo` | When CD becomes installed, DM requester: console URL, kubeadmin password, kubeconfig (file upload or time-limited link), EOD/weekend hibernate policy. Watch via Deployment loop or short-lived Job/Informer. Needs Slack scopes for files + DMs. |
-| P0-2 | **Destroy / deprovision** | `todo` | `/opdev-cluster-bot destroy <name>` with double confirm; delete CD (Hive cleanup) + ManagedCluster + namespace; audit who destroyed. |
-| P0-3 | **Ownership & ACL** | `todo` | Only owner (or admins via `ADMIN_SLACK_GROUP_IDS`) can hibernate/resume/destroy/keep-weekend; admins can act on any bot-managed cluster. |
-| P0-4 | **Install progress / failure DM** | `todo` | Slack updates on provisioning → installing → failed/installed; surface Hive condition messages on failure. |
-| P0-5 | **Production runbook** | `todo` | Expand smoke checklist into on-call: rotate secrets, stuck install, Quay outage, Socket Mode disconnect, AWS quota. |
-| P0-6 | **Image tag discipline** | `todo` | Stop relying only on `:latest` in prod; pin digest or semver tags; document promote path. |
+| ID | Feature | Issue | Status | Notes |
+|----|---------|-------|--------|-------|
+| P0-1 | **Ready notification + credentials DM** | [#8](https://github.com/yashoza19/opdev-cluster-bot/issues/8) | `todo` | When CD becomes installed, DM requester: console URL, kubeadmin password, kubeconfig (file upload or time-limited link), EOD/weekend hibernate policy. Watch via Deployment loop or short-lived Job/Informer. Needs Slack scopes for files + DMs. |
+| P0-2 | **Destroy / deprovision** | [#9](https://github.com/yashoza19/opdev-cluster-bot/issues/9) | `in progress` | `/opdev-cluster-bot destroy <name>` with double confirm; delete CD (Hive cleanup) + ManagedCluster + namespace; audit who destroyed. |
+| P0-3 | **Ownership & ACL** | [#10](https://github.com/yashoza19/opdev-cluster-bot/issues/10) | `todo` | Only owner (or admins via `ADMIN_SLACK_GROUP_IDS`) can hibernate/resume/destroy/keep-weekend; admins can act on any bot-managed cluster. |
+| P0-4 | **Install progress / failure DM** | [#11](https://github.com/yashoza19/opdev-cluster-bot/issues/11) | `todo` | Slack updates on provisioning → installing → failed/installed; surface Hive condition messages on failure. |
+| P0-5 | **Production runbook** | [#12](https://github.com/yashoza19/opdev-cluster-bot/issues/12) | `todo` | Expand smoke checklist into on-call: rotate secrets, stuck install, Quay outage, Socket Mode disconnect, AWS quota. |
+| P0-6 | **Image tag discipline** | [#13](https://github.com/yashoza19/opdev-cluster-bot/issues/13) | `todo` | Stop relying only on `:latest` in prod; pin digest or semver tags; document promote path. |
 
 ### P1 — strong production hygiene
 
-| ID | Feature | Status | Notes |
-|----|---------|--------|-------|
-| P1-1 | **TTL / auto-destroy** | `todo` | Annotation `opdev.io/expires-at`; CronJob warns then destroys stale clusters. |
-| P1-2 | **Quota per user / team** | `todo` | Max clusters per Slack user; optional total AWS spend proxy (count × size). |
-| P1-3 | **Channel audit trail** | `todo` | Optional ops channel: spin/hibernate/destroy events (no secrets). |
-| P1-4 | **Multinode + instance-type allowlists** | `todo` | ConfigMap allowlist; hard-block undersized SNO if desired. |
-| P1-5 | **Re-send credentials** | `todo` | `/opdev-cluster-bot creds <name>` re-DMs kubeconfig/password to owner. |
-| P1-6 | **Metrics / health** | `todo` | Prometheus metrics or at least Slack “bot heartbeat”; alert on CrashLoop. |
-| P1-7 | **Integration tests on hub** | `todo` | Scripted smoke against disposable cluster (or dry-run + power on fixture). |
+| ID | Feature | Issue | Status | Notes |
+|----|---------|-------|--------|-------|
+| P1-1 | **TTL / auto-destroy** | [#14](https://github.com/yashoza19/opdev-cluster-bot/issues/14) | `todo` | Annotation `opdev.io/expires-at`; CronJob warns then destroys stale clusters. |
+| P1-2 | **Quota per user / team** | [#15](https://github.com/yashoza19/opdev-cluster-bot/issues/15) | `todo` | Max clusters per Slack user; optional total AWS spend proxy (count × size). |
+| P1-3 | **Channel audit trail** | [#16](https://github.com/yashoza19/opdev-cluster-bot/issues/16) | `todo` | Optional ops channel: spin/hibernate/destroy events (no secrets). |
+| P1-4 | **Multinode + instance-type allowlists** | [#17](https://github.com/yashoza19/opdev-cluster-bot/issues/17) | `todo` | ConfigMap allowlist; hard-block undersized SNO if desired. |
+| P1-5 | **Re-send credentials** | [#18](https://github.com/yashoza19/opdev-cluster-bot/issues/18) | `todo` | `/opdev-cluster-bot creds <name>` re-DMs kubeconfig/password to owner. |
+| P1-6 | **Metrics / health** | [#19](https://github.com/yashoza19/opdev-cluster-bot/issues/19) | `todo` | Prometheus metrics or at least Slack “bot heartbeat”; alert on CrashLoop. |
+| P1-7 | **Integration tests on hub** | [#20](https://github.com/yashoza19/opdev-cluster-bot/issues/20) | `todo` | Scripted smoke against disposable cluster (or dry-run + power on fixture). |
 
 ### P2 — nice-to-have
 
-| ID | Feature | Status | Notes |
-|----|---------|--------|-------|
-| P2-1 | Cost estimate in spin confirm | `nice-to-have` | Rough AWS rate table by instance type × topology. |
-| P2-2 | Azure / GCP backends | `wont-do (MVP)` | Design allows later; not for v1. |
-| P2-3 | ClusterPool / claim | `wont-do (MVP)` | |
-| P2-4 | Multi-replica HA / Events API | `wont-do (MVP)` | Socket Mode stays single replica. |
-| P2-5 | Custom install-config overrides | `nice-to-have` | Extra CIDR, zones, machine CIDR via flags. |
-| P2-6 | Transfer ownership | `nice-to-have` | `/transfer <name> @user`. |
-| P2-7 | Hibernation schedule overrides | `nice-to-have` | Per-cluster EOD opt-out weekdays. |
+| ID | Feature | Issue | Status | Notes |
+|----|---------|-------|--------|-------|
+| P2-1 | Cost estimate in spin confirm | [#21](https://github.com/yashoza19/opdev-cluster-bot/issues/21) | `nice-to-have` | Rough AWS rate table by instance type × topology. |
+| P2-2 | Azure / GCP backends | — | `wont-do (MVP)` | Design allows later; not for v1. |
+| P2-3 | ClusterPool / claim | — | `wont-do (MVP)` | |
+| P2-4 | Multi-replica HA / Events API | — | `wont-do (MVP)` | Socket Mode stays single replica. |
+| P2-5 | Custom install-config overrides | [#22](https://github.com/yashoza19/opdev-cluster-bot/issues/22) | `nice-to-have` | Extra CIDR, zones, machine CIDR via flags. |
+| P2-6 | Transfer ownership | [#23](https://github.com/yashoza19/opdev-cluster-bot/issues/23) | `nice-to-have` | `/transfer <name> @user`. |
+| P2-7 | Hibernation schedule overrides | [#24](https://github.com/yashoza19/opdev-cluster-bot/issues/24) | `nice-to-have` | Per-cluster EOD opt-out weekdays. |
 
 ### Already shipped (track as done)
 
@@ -121,7 +123,7 @@ The bot does **not** yet read or DM those — that is a P0 below.
 | Hibernate / resume via `powerState` | `done` |
 | Spin AWS Hive IPI (SNO / multinode) | `done` (validate E2E) |
 | Shared creds copy + generated install-config | `done` |
-| EOD remind + weekend hibernate + Monday resume CronJobs | `done` (validate on hub) |
+| EOD remind + weekend hibernate + daily 08:00 ET resume CronJobs | `done` (validate on hub) |
 | Weekend opt-out (`keep-weekend`) | `done` |
 | Deploy manifests + docs + unit tests | `done` |
 

@@ -9,10 +9,12 @@ HELP_TEXT = """*opdev-cluster-bot* — ACM/Hive cluster helper
 • `/opdev-cluster-bot spin <version> <SNO|multinode> <instance-type> [name]` — provision on AWS
 • `/opdev-cluster-bot hibernate <name>` — confirm then hibernate
 • `/opdev-cluster-bot resume <name>` — confirm then resume
+• `/opdev-cluster-bot destroy <name>` — confirm then deprovision (AWS teardown)
 • `/opdev-cluster-bot status <name>` — cluster details
 • `/opdev-cluster-bot keep-weekend <name>` — skip weekend auto-hibernate
 • `/opdev-cluster-bot help` — this message
 """
+
 
 
 def confirm_power_blocks(*, action_id: str, cluster_name: str, verb: str) -> list[dict]:
@@ -40,6 +42,48 @@ def confirm_power_blocks(*, action_id: str, cluster_name: str, verb: str) -> lis
                             "text": f"Are you sure you want to {verb} `{cluster_name}`?",
                         },
                         "confirm": {"type": "plain_text", "text": verb.title()},
+                        "deny": {"type": "plain_text", "text": "Cancel"},
+                    },
+                },
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Cancel"},
+                    "action_id": "cancel_power_action",
+                    "value": cluster_name,
+                },
+            ],
+        },
+    ]
+
+
+def confirm_destroy_blocks(*, cluster_name: str) -> list[dict]:
+    """Destructive confirm: danger button + Slack confirm dialog (double confirm)."""
+    return [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": (
+                    f"Destroy cluster `{cluster_name}`? This cannot be undone."
+                ),
+            },
+        },
+        {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Destroy"},
+                    "style": "danger",
+                    "action_id": "confirm_destroy",
+                    "value": cluster_name,
+                    "confirm": {
+                        "title": {"type": "plain_text", "text": "Confirm destroy"},
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": f"Delete `{cluster_name}`?",
+                        },
+                        "confirm": {"type": "plain_text", "text": "Destroy"},
                         "deny": {"type": "plain_text", "text": "Cancel"},
                     },
                 },

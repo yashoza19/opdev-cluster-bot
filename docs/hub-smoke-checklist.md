@@ -43,7 +43,15 @@ oc -n opdev-cluster-bot logs deploy/opdev-cluster-bot -f
    - [ ] `/opdev-cluster-bot keep-weekend <name>`
    - [ ] Label `opdev.io/weekend-hibernate=false` on the ClusterDeployment
 
-5. **CronJobs (manual trigger)**
+5. **Destroy** (disposable bot-managed cluster only)
+   - [ ] `/opdev-cluster-bot destroy <name>` → danger button + Slack confirm
+   - [ ] ClusterDeployment deletion starts; Hive deprovision Job runs **in the cluster namespace**
+   - [ ] ManagedCluster removed from ACM
+   - [ ] Namespace is **not** deleted by the bot (deleting it early orphans AWS)
+   - [ ] After CD is gone, namespace can be removed if Hive left it behind
+   - [ ] Refuses non-bot-managed clusters and `local-cluster`
+
+6. **CronJobs (manual trigger)**
    ```bash
    oc -n opdev-cluster-bot create job --from=cronjob/opdev-remind-hibernate remind-now
    oc -n opdev-cluster-bot logs job/remind-now
@@ -51,13 +59,13 @@ oc -n opdev-cluster-bot logs deploy/opdev-cluster-bot -f
    - [ ] Reminder posts to `REMINDER_CHANNEL` or owner DM with Hibernate button
    - [ ] Button handled by the live Deployment
 
-6. **Real provision follow-through** (after spin succeeds)
+7. **Real provision follow-through** (after spin succeeds)
    - [ ] Wait until `ClusterDeployment` reports installed / provision complete
    - [ ] Confirm Hive wrote admin kubeconfig + password secrets in the cluster namespace
    - [ ] `ManagedCluster` joins / becomes Available
    - [ ] Hibernate → resume that spoke
-   - [ ] Trigger remind / weekend / monday Jobs against it
-   - [ ] Clean up when done (manual delete until `/destroy` exists)
+   - [ ] Trigger remind / weekend / daily-resume Jobs against it
+   - [ ] Clean up when done (`/opdev-cluster-bot destroy <name>`)
 
 See [production-roadmap.md](production-roadmap.md) for the full production feature backlog.
 

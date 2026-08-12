@@ -29,7 +29,7 @@ Slack  <-->  Socket Mode Deployment (replicas: 1)
 CronJobs (same image, same SA)
   remind-hibernate     Mon-Fri 17:00 ET
   weekend-hibernate    Fri 18:00 ET
-  monday-resume        Mon 08:00 ET
+  daily-resume         Daily 08:00 ET (all hibernating bot-managed clusters)
 ```
 
 ### Components
@@ -63,6 +63,7 @@ CronJobs (same image, same SA)
 - Reminders post Block Kit; clicks are handled by the live Deployment
 - Weekend job skips clusters with `opdev.io/weekend-hibernate=false`
 - Monday resume only for bot-managed clusters that participate in weekend hibernate
+- Daily 08:00 ET resume for all hibernating bot-managed clusters (replaces Monday-only job)
 
 ## Configuration
 
@@ -81,7 +82,6 @@ Injected via ConfigMap + Secret (see `deploy/`):
 
 ## Out of scope (MVP)
 
-- Destroy/deprovision command
 - Azure/GCP backends
 - ClusterPool / claim flow
 - HTTP Events API / multi-replica HA
