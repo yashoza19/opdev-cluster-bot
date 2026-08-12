@@ -64,7 +64,7 @@ oc -n opdev-cluster-bot logs deploy/opdev-cluster-bot -f
    - [ ] Confirm Hive wrote admin kubeconfig + password secrets in the cluster namespace
    - [ ] `ManagedCluster` joins / becomes Available
    - [ ] Hibernate → resume that spoke
-   - [ ] Trigger remind / weekend / monday Jobs against it
+   - [ ] Trigger remind / weekend / daily-resume Jobs against it
    - [ ] Clean up when done (`/opdev-cluster-bot destroy <name>`)
 
 See [production-roadmap.md](production-roadmap.md) for the full production feature backlog.

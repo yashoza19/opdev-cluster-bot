@@ -85,14 +85,14 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: opdev-monday-resume
+  name: opdev-daily-resume
   namespace: opdev-cluster-bot
   labels:
     app.kubernetes.io/name: opdev-cluster-bot
-    app.kubernetes.io/component: monday-resume
+    app.kubernetes.io/component: daily-resume
 spec:
   timeZone: America/New_York
-  schedule: "0 8 * * 1"
+  schedule: "0 8 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -102,15 +102,15 @@ spec:
         metadata:
           labels:
             app.kubernetes.io/name: opdev-cluster-bot
-            app.kubernetes.io/component: monday-resume
+            app.kubernetes.io/component: daily-resume
         spec:
           serviceAccountName: opdev-cluster-bot
           restartPolicy: OnFailure
           containers:
-            - name: monday-resume
+            - name: daily-resume
               image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
-              command: ["opdev-monday-resume"]
+              command: ["opdev-daily-resume"]
               envFrom:
                 - configMapRef:
                     name: opdev-cluster-bot-config

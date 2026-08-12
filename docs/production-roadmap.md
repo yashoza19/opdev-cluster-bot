@@ -62,7 +62,7 @@ The bot does **not** yet read or DM those — that is a P0 below.
 
 - [ ] Manual Job from `opdev-remind-hibernate` → owner DM or `REMINDER_CHANNEL` + Hibernate button works
 - [ ] Manual Job from `opdev-weekend-hibernate` hibernates bot-managed Running clusters
-- [ ] Manual Job from `opdev-monday-resume` resumes weekend participants
+- [ ] Manual Job from `opdev-daily-resume` resumes all hibernating bot-managed clusters
 - [ ] Timezone / schedule correct on the hub (CronJob `schedule` + `TZ`)
 
 ### D. Ops / security
@@ -123,7 +123,7 @@ Hub validation tracker: [#7](https://github.com/yashoza19/opdev-cluster-bot/issu
 | Hibernate / resume via `powerState` | `done` |
 | Spin AWS Hive IPI (SNO / multinode) | `done` (validate E2E) |
 | Shared creds copy + generated install-config | `done` |
-| EOD remind + weekend hibernate + Monday resume CronJobs | `done` (validate on hub) |
+| EOD remind + weekend hibernate + daily 08:00 ET resume CronJobs | `done` (validate on hub) |
 | Weekend opt-out (`keep-weekend`) | `done` |
 | Deploy manifests + docs + unit tests | `done` |
 
