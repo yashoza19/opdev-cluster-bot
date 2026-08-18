@@ -83,7 +83,7 @@ Hub validation tracker: [#7](https://github.com/yashoza19/opdev-cluster-bot/issu
 
 | ID | Feature | Issue | Status | Notes |
 |----|---------|-------|--------|-------|
-| P0-1 | **Ready notification + credentials DM** | [#8](https://github.com/yashoza19/opdev-cluster-bot/issues/8) | `todo` | When CD becomes installed, DM requester: console URL, kubeadmin password, kubeconfig (file upload or time-limited link), EOD/weekend hibernate policy. Watch via Deployment loop or short-lived Job/Informer. Needs Slack scopes for files + DMs. |
+| P0-1 | **Ready notification + credentials DM** | [#8](https://github.com/yashoza19/opdev-cluster-bot/issues/8) | `in progress` | CronJob `opdev-notify-ready` DMs owner on install: console/API URLs, kubeadmin password, kubeconfig file; marks `opdev.io/creds-notified`. |
 | P0-2 | **Destroy / deprovision** | [#9](https://github.com/yashoza19/opdev-cluster-bot/issues/9) | `in progress` | `/opdev-cluster-bot destroy <name>` with double confirm; delete CD (Hive cleanup) + ManagedCluster + namespace; audit who destroyed. |
 | P0-3 | **Ownership & ACL** | [#10](https://github.com/yashoza19/opdev-cluster-bot/issues/10) | `todo` | Only owner (or admins via `ADMIN_SLACK_GROUP_IDS`) can hibernate/resume/destroy/keep-weekend; admins can act on any bot-managed cluster. |
 | P0-4 | **Install progress / failure DM** | [#11](https://github.com/yashoza19/opdev-cluster-bot/issues/11) | `todo` | Slack updates on provisioning → installing → failed/installed; surface Hive condition messages on failure. |

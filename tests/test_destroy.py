@@ -26,6 +26,9 @@ def _info(**overrides) -> ClusterInfo:
         managed_by_bot=True,
         weekend_hibernate=True,
         cluster_deployment_name="opdev-demo",
+        creds_notified=False,
+        api_url=None,
+        console_url=None,
     )
     base.update(overrides)
     return ClusterInfo(**base)

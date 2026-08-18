@@ -62,6 +62,8 @@ oc -n opdev-cluster-bot logs deploy/opdev-cluster-bot -f
 7. **Real provision follow-through** (after spin succeeds)
    - [ ] Wait until `ClusterDeployment` reports installed / provision complete
    - [ ] Confirm Hive wrote admin kubeconfig + password secrets in the cluster namespace
+   - [ ] Owner receives Slack DM with API/console URLs, kubeadmin password, and kubeconfig file
+   - [ ] `ClusterDeployment` annotated `opdev.io/creds-notified=true` (no duplicate DMs)
    - [ ] `ManagedCluster` joins / becomes Available
    - [ ] Hibernate → resume that spoke
    - [ ] Trigger remind / weekend / daily-resume Jobs against it

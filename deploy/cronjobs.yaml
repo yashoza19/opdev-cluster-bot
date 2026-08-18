@@ -122,3 +122,44 @@ spec:
                 runAsNonRoot: true
                 capabilities:
                   drop: ["ALL"]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: opdev-notify-ready
+  namespace: opdev-cluster-bot
+  labels:
+    app.kubernetes.io/name: opdev-cluster-bot
+    app.kubernetes.io/component: notify-ready
+spec:
+  timeZone: America/New_York
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: opdev-cluster-bot
+            app.kubernetes.io/component: notify-ready
+        spec:
+          serviceAccountName: opdev-cluster-bot
+          restartPolicy: OnFailure
+          containers:
+            - name: notify-ready
+              image: quay.io/yoza/opdev-cluster-bot:latest
+              imagePullPolicy: Always
+              command: ["opdev-notify-ready"]
+              envFrom:
+                - configMapRef:
+                    name: opdev-cluster-bot-config
+                - secretRef:
+                    name: opdev-cluster-bot-slack
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]

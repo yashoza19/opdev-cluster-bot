@@ -23,7 +23,8 @@ Under **OAuth & Permissions** → **Bot Token Scopes**, add:
 | `chat:write` | Channel posts and updates |
 | `users:read` | Resolve display names |
 | `users:read.email` | Owner email annotations |
-| `im:write` | DM hibernate reminders when no channel is set |
+| `im:write` | DM owners (credentials, reminders when no channel is set) |
+| `files:write` | Upload admin kubeconfig to owner DM on cluster ready |
 | `usergroups:read` | Optional admin group authorization |
 
 Install the app to the workspace and copy the Bot User OAuth Token (`xoxb-...`) → `SLACK_BOT_TOKEN`.
