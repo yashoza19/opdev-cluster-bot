@@ -29,17 +29,26 @@ spec:
               image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
               command: ["opdev-remind-hibernate"]
+              env:
+                - name: TMPDIR
+                  value: /tmp
               envFrom:
                 - configMapRef:
                     name: opdev-cluster-bot-config
                 - secretRef:
                     name: opdev-cluster-bot-slack
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
                 runAsNonRoot: true
                 capabilities:
                   drop: ["ALL"]
+          volumes:
+            - name: tmp
+              emptyDir: {}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -70,17 +79,26 @@ spec:
               image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
               command: ["opdev-weekend-hibernate"]
+              env:
+                - name: TMPDIR
+                  value: /tmp
               envFrom:
                 - configMapRef:
                     name: opdev-cluster-bot-config
                 - secretRef:
                     name: opdev-cluster-bot-slack
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
                 runAsNonRoot: true
                 capabilities:
                   drop: ["ALL"]
+          volumes:
+            - name: tmp
+              emptyDir: {}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -111,17 +129,26 @@ spec:
               image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
               command: ["opdev-daily-resume"]
+              env:
+                - name: TMPDIR
+                  value: /tmp
               envFrom:
                 - configMapRef:
                     name: opdev-cluster-bot-config
                 - secretRef:
                     name: opdev-cluster-bot-slack
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
                 runAsNonRoot: true
                 capabilities:
                   drop: ["ALL"]
+          volumes:
+            - name: tmp
+              emptyDir: {}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -152,14 +179,23 @@ spec:
               image: quay.io/yoza/opdev-cluster-bot:latest
               imagePullPolicy: Always
               command: ["opdev-notify-ready"]
+              env:
+                - name: TMPDIR
+                  value: /tmp
               envFrom:
                 - configMapRef:
                     name: opdev-cluster-bot-config
                 - secretRef:
                     name: opdev-cluster-bot-slack
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
                 runAsNonRoot: true
                 capabilities:
                   drop: ["ALL"]
+          volumes:
+            - name: tmp
+              emptyDir: {}

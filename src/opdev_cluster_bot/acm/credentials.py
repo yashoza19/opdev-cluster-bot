@@ -117,10 +117,13 @@ def clusters_pending_creds_notification(
     pending: list[ClusterInfo] = []
     for info in list_clusters(settings, bot_managed_only=True):
         if not info.installed:
+            logger.info("Skip creds notify %s: not installed", info.name)
             continue
         if info.creds_notified:
+            logger.info("Skip creds notify %s: already notified", info.name)
             continue
         if not info.owner_slack_id:
+            logger.info("Skip creds notify %s: no owner Slack ID", info.name)
             continue
         pending.append(info)
     return pending
