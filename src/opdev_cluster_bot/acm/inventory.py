@@ -57,6 +57,18 @@ def _condition_status(conditions: list[dict[str, Any]], type_name: str) -> str |
     return None
 
 
+def _cd_installed(cd: dict[str, Any] | None) -> bool:
+    if not cd:
+        return False
+    cd_spec = cd.get("spec") or {}
+    if cd_spec.get("installed"):
+        return True
+    cd_status = cd.get("status") or {}
+    if _condition_status(cd_status.get("conditions") or [], "Provisioned") == "True":
+        return True
+    return False
+
+
 def _cd_for_cluster(name: str) -> dict[str, Any] | None:
     try:
         cds = resource(f"{HIVE_GROUP}/{HIVE_VERSION}", "ClusterDeployment")
@@ -105,7 +117,7 @@ def _from_objects(
         namespace=cd_md.get("namespace") or name,
         power_desired=cd_spec.get("powerState"),
         power_actual=cd_status.get("powerState") or cd_spec.get("powerState"),
-        installed=bool(cd_spec.get("installed")),
+        installed=_cd_installed(cd),
         available=_condition_status(status.get("conditions") or [], "ManagedClusterConditionAvailable"),
         version=claims.get("version.openshift.io") or status.get("version", {}).get("kubernetes"),
         owner_slack_id=merged_annotations.get(ANNOTATION_OWNER_SLACK_ID),
