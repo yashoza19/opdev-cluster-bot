@@ -8,6 +8,7 @@ from typing import Any
 
 from opdev_cluster_bot.acm.client import HIVE_GROUP, HIVE_VERSION, OCM_GROUP, OCM_VERSION, resource
 from opdev_cluster_bot.config import (
+    ANNOTATION_CREDS_NOTIFIED,
     ANNOTATION_INSTANCE_TYPE,
     ANNOTATION_OWNER_EMAIL,
     ANNOTATION_OWNER_SLACK_ID,
@@ -37,6 +38,9 @@ class ClusterInfo:
     managed_by_bot: bool
     weekend_hibernate: bool
     cluster_deployment_name: str | None
+    creds_notified: bool
+    api_url: str | None
+    console_url: str | None
 
     def summary_line(self) -> str:
         power = self.power_actual or self.power_desired or "Unknown"
@@ -111,6 +115,9 @@ def _from_objects(
         managed_by_bot=managed,
         weekend_hibernate=weekend,
         cluster_deployment_name=(cd_md.get("name") if cd else None),
+        creds_notified=merged_annotations.get(ANNOTATION_CREDS_NOTIFIED, "").lower() == "true",
+        api_url=cd_status.get("apiURL"),
+        console_url=cd_status.get("webConsoleURL"),
     )
 
 

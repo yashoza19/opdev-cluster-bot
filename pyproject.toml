@@ -28,6 +28,7 @@ opdev-remind-hibernate = "jobs.remind_hibernate:main"
 opdev-weekend-hibernate = "jobs.weekend_hibernate:main"
 opdev-monday-resume = "jobs.monday_resume:main"
 opdev-daily-resume = "jobs.daily_resume:main"
+opdev-notify-ready = "jobs.notify_ready:main"
 
 [tool.setuptools.packages.find]
 where = ["src", "."]

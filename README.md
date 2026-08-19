@@ -10,6 +10,7 @@ Slack bot for ACM/Hive OpenShift cluster lifecycle on AWS. Runs on the ACM hub c
 - Destroy / deprovision bot-managed clusters (`destroy <name>`, double confirm)
 - Weekday end-of-day hibernate reminders (17:00 America/New_York)
 - Friday auto-hibernate and daily 08:00 resume (opt out of weekend hibernate with `keep-weekend`)
+- Ready notification: DM owner console URL, kubeadmin password, and kubeconfig when install completes
 
 ## Commands
 

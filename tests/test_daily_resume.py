@@ -23,6 +23,9 @@ def _cluster(name: str, power: str, weekend: bool = True) -> ClusterInfo:
         managed_by_bot=True,
         weekend_hibernate=weekend,
         cluster_deployment_name=name,
+        creds_notified=False,
+        api_url=None,
+        console_url=None,
     )
 
 
