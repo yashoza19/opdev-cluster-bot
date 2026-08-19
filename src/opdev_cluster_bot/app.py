@@ -13,6 +13,7 @@ from opdev_cluster_bot.actions import (
     handle_confirm_destroy,
     handle_confirm_hibernate,
     handle_confirm_resume,
+    handle_submit_spin_request,
 )
 from opdev_cluster_bot.commands import handle_opdev_command
 from opdev_cluster_bot.config import Settings
@@ -42,6 +43,7 @@ def create_app(settings: Settings | None = None) -> App:
     app.action("confirm_resume")(handle_confirm_resume)
     app.action("confirm_destroy")(handle_confirm_destroy)
     app.action("cancel_power_action")(handle_cancel_power_action)
+    app.action("submit_spin_request")(handle_submit_spin_request)
     return app
 
 

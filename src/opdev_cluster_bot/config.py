@@ -36,6 +36,10 @@ class Settings:
     dry_run: bool = False
     managed_by_label: str = "opdev-cluster-bot"
     timezone: str = "America/New_York"
+    allowed_aws_regions: list[str] = field(default_factory=lambda: ["us-east-1"])
+    profile_base_instance_type: str = "m5.4xlarge"
+    profile_virt_instance_type: str = "m5.metal"
+    profile_ai_instance_type: str = "g5.4xlarge"
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -56,6 +60,10 @@ class Settings:
             dry_run=_bool(os.environ.get("DRY_RUN"), False),
             managed_by_label=os.environ.get("MANAGED_BY_LABEL", "opdev-cluster-bot"),
             timezone=os.environ.get("TZ", "America/New_York"),
+            allowed_aws_regions=_csv(os.environ.get("ALLOWED_AWS_REGIONS")) or ["us-east-1"],
+            profile_base_instance_type=os.environ.get("PROFILE_BASE_INSTANCE_TYPE", "m5.4xlarge"),
+            profile_virt_instance_type=os.environ.get("PROFILE_VIRT_INSTANCE_TYPE", "m5.metal"),
+            profile_ai_instance_type=os.environ.get("PROFILE_AI_INSTANCE_TYPE", "g5.4xlarge"),
         )
 
 

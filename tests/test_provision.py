@@ -88,3 +88,20 @@ def test_build_manifests_multinode():
     install = manifests[1]["stringData"]["install-config.yaml"]
     assert "name: worker" in install
     assert "replicas: 3" in install
+
+
+def test_build_manifests_uses_request_region_override():
+    settings = Settings(base_domain="dev.example.com", aws_region="us-east-1")
+    manifests = build_manifests(
+        ProvisionRequest(
+            version="4.22.8",
+            topology="SNO",
+            instance_type="m5.4xlarge",
+            cluster_name="regioncheck",
+            aws_region="us-west-2",
+        ),
+        settings,
+        imageset_name="img4.22.8-x86-64-appsub",
+    )
+    cd = manifests[2]
+    assert cd["spec"]["platform"]["aws"]["region"] == "us-west-2"
