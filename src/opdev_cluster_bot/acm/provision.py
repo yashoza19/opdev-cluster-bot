@@ -53,6 +53,7 @@ class ProvisionRequest:
     cluster_name: str | None = None
     owner_slack_id: str | None = None
     owner_email: str | None = None
+    aws_region: str | None = None
 
 
 @dataclass
@@ -229,6 +230,7 @@ def build_manifests(
         "stringData": {"install-config.yaml": install_config},
     }
 
+    region = req.aws_region or settings.aws_region
     cd = {
         "apiVersion": f"{HIVE_GROUP}/{HIVE_VERSION}",
         "kind": "ClusterDeployment",
@@ -243,7 +245,7 @@ def build_manifests(
             "clusterName": cluster_name,
             "platform": {
                 "aws": {
-                    "region": settings.aws_region,
+                    "region": region,
                     "credentialsSecretRef": {"name": settings.aws_creds_secret},
                 }
             },
@@ -300,6 +302,7 @@ def provision_cluster(req: ProvisionRequest, settings: Settings | None = None) -
         cluster_name=req.cluster_name,
         owner_slack_id=req.owner_slack_id,
         owner_email=req.owner_email,
+        aws_region=req.aws_region,
     )
 
     if not settings.dry_run:

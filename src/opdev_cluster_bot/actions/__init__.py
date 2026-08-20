@@ -11,8 +11,9 @@ from slack_sdk import WebClient
 from opdev_cluster_bot.acm.destroy import DestroyError, cluster_for_destroy, destroy_cluster
 from opdev_cluster_bot.acm.inventory import get_cluster
 from opdev_cluster_bot.acm.power import PowerError, hibernate_cluster, resume_cluster
+from opdev_cluster_bot.acm.provision import ProvisionError, ProvisionRequest, provision_cluster
 from opdev_cluster_bot.config import Settings
-from opdev_cluster_bot.identity import is_authorized
+from opdev_cluster_bot.identity import is_authorized, resolve_email
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +106,73 @@ def handle_cancel_power_action(
         client.chat_postEphemeral(channel=channel, user=user_id, text="Cancelled.")
 
 
+def handle_submit_spin_request(
+    ack: Ack,
+    body: dict[str, Any],
+    client: WebClient,
+    context: BoltContext,
+) -> None:
+    ack()
+    settings = _settings(context)
+    user_id = body.get("user", {}).get("id") or ""
+    channel = body.get("channel", {}).get("id") or body.get("container", {}).get("channel_id")
+    state = (body.get("state") or {}).get("values") or {}
+
+    version = _state_value(state, "spin_version", "value")
+    topology = _state_value(state, "spin_topology", "value")
+    region = _state_value(state, "spin_region", "value")
+    profile = _state_value(state, "spin_profile", "value")
+    cluster_name = (_state_text(state, "spin_name", "value") or "").strip() or None
+
+    if not all([version, topology, region, profile]):
+        _notify(client, channel, user_id, "Missing required spin options. Please try again.")
+        return
+    instance_type = _profile_instance_type(profile, settings)
+    if region not in settings.allowed_aws_regions:
+        _notify(client, channel, user_id, f"Region `{region}` is not allowed.")
+        return
+
+    email = resolve_email(client, user_id)
+    _notify(
+        client,
+        channel,
+        user_id,
+        f"Starting provision: OCP `{version}` `{topology}` `{instance_type}` in `{region}`"
+        + (f" as `{cluster_name}`" if cluster_name else "")
+        + (" _(dry-run)_" if settings.dry_run else "")
+        + "…",
+    )
+    try:
+        result = provision_cluster(
+            ProvisionRequest(
+                version=version,
+                topology=topology,
+                instance_type=instance_type,
+                cluster_name=cluster_name,
+                owner_slack_id=user_id,
+                owner_email=email,
+                aws_region=region,
+            ),
+            settings,
+        )
+    except ProvisionError as exc:
+        _notify(client, channel, user_id, f"Provision failed: {exc}")
+        return
+
+    logger.info(
+        "audit spin user=%s cluster=%s dry_run=%s profile=%s region=%s",
+        user_id,
+        result.cluster_name,
+        result.dry_run,
+        profile,
+        region,
+    )
+    if channel:
+        client.chat_postMessage(channel=channel, text=result.message)
+    else:
+        _notify(client, channel, user_id, result.message)
+
+
 def _apply_power(
     body: dict[str, Any],
     client: WebClient,
@@ -157,3 +225,28 @@ def _notify(client: WebClient, channel: str | None, user_id: str, text: str) -> 
         client.chat_postEphemeral(channel=channel, user=user_id, text=text)
     elif user_id:
         client.chat_postMessage(channel=user_id, text=text)
+
+
+def _state_value(state: dict[str, Any], block_id: str, action_id: str) -> str | None:
+    element = ((state.get(block_id) or {}).get(action_id) or {})
+    if "selected_option" in element:
+        return ((element.get("selected_option") or {}).get("value")) or None
+    if "selected_options" in element:
+        options = element.get("selected_options") or []
+        if options:
+            return options[0].get("value")
+    return None
+
+
+def _state_text(state: dict[str, Any], block_id: str, action_id: str) -> str | None:
+    element = ((state.get(block_id) or {}).get(action_id) or {})
+    return element.get("value")
+
+
+def _profile_instance_type(profile: str, settings: Settings) -> str:
+    profile_key = profile.strip().lower()
+    if profile_key == "virt":
+        return settings.profile_virt_instance_type
+    if profile_key == "ai":
+        return settings.profile_ai_instance_type
+    return settings.profile_base_instance_type

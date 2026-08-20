@@ -4,20 +4,23 @@ from __future__ import annotations
 
 import logging
 import shlex
+import re
 from typing import Any
 
 from slack_bolt import Ack, BoltContext, Say
 from slack_sdk import WebClient
 
+from opdev_cluster_bot.acm.client import HIVE_GROUP, HIVE_VERSION, resource
 from opdev_cluster_bot.acm.destroy import cluster_for_destroy
 from opdev_cluster_bot.acm.inventory import get_cluster, list_clusters
 from opdev_cluster_bot.acm.power import PowerError, set_weekend_opt_out
 from opdev_cluster_bot.acm.provision import ProvisionError, ProvisionRequest, provision_cluster
-from opdev_cluster_bot.blocks import HELP_TEXT, confirm_destroy_blocks, confirm_power_blocks
+from opdev_cluster_bot.blocks import HELP_TEXT, confirm_destroy_blocks, confirm_power_blocks, spin_wizard_blocks
 from opdev_cluster_bot.config import Settings
 from opdev_cluster_bot.identity import is_authorized, resolve_email
 
 logger = logging.getLogger(__name__)
+_VERSION_RE = re.compile(r"(\d+\.\d+\.\d+)")
 
 
 def _settings(context: BoltContext) -> Settings:
@@ -145,6 +148,36 @@ def _cmd_list(**kwargs: Any) -> None:
 
 def _cmd_spin(**kwargs: Any) -> None:
     args: list[str] = kwargs["args"]
+    settings: Settings = kwargs["settings"]
+    if not args:
+        versions = _available_versions()
+        if not versions:
+            _reply(
+                kwargs["client"],
+                kwargs["channel_id"],
+                kwargs["user_id"],
+                "No ClusterImageSet versions found on the hub.",
+                kwargs.get("response_url"),
+            )
+            return
+        blocks = spin_wizard_blocks(
+            versions=versions,
+            regions=settings.allowed_aws_regions,
+            default_region=settings.aws_region,
+            base_instance=settings.profile_base_instance_type,
+            virt_instance=settings.profile_virt_instance_type,
+            ai_instance=settings.profile_ai_instance_type,
+        )
+        _reply(
+            kwargs["client"],
+            kwargs["channel_id"],
+            kwargs["user_id"],
+            "Cluster provision wizard",
+            kwargs.get("response_url"),
+            blocks=blocks,
+        )
+        return
+
     if len(args) < 3:
         _reply(
             kwargs["client"],
@@ -159,7 +192,6 @@ def _cmd_spin(**kwargs: Any) -> None:
     name = args[3] if len(args) > 3 else None
     user_id = kwargs["user_id"]
     client: WebClient = kwargs["client"]
-    settings: Settings = kwargs["settings"]
     email = resolve_email(client, user_id)
 
     _reply(
@@ -200,6 +232,22 @@ def _cmd_spin(**kwargs: Any) -> None:
         kinds = ", ".join(f"{m.get('kind')}" for m in result.manifests)
         msg += f"\nManifests: {kinds}"
     client.chat_postMessage(channel=kwargs["channel_id"], text=msg)
+
+
+def _available_versions() -> list[str]:
+    try:
+        api = resource(f"{HIVE_GROUP}/{HIVE_VERSION}", "ClusterImageSet")
+        items = api.get().to_dict().get("items") or []
+    except Exception:
+        logger.exception("Failed listing ClusterImageSets")
+        return []
+    versions: set[str] = set()
+    for item in items:
+        name = (item.get("metadata") or {}).get("name") or ""
+        match = _VERSION_RE.search(name)
+        if match:
+            versions.add(match.group(1))
+    return sorted(versions, reverse=True)
 
 
 def _cmd_hibernate(**kwargs: Any) -> None:

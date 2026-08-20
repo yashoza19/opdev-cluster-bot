@@ -101,6 +101,7 @@ Hub validation tracker: [#7](https://github.com/yashoza19/opdev-cluster-bot/issu
 | P1-5 | **Re-send credentials** | [#18](https://github.com/yashoza19/opdev-cluster-bot/issues/18) | `todo` | `/opdev-cluster-bot creds <name>` re-DMs kubeconfig/password to owner. |
 | P1-6 | **Metrics / health** | [#19](https://github.com/yashoza19/opdev-cluster-bot/issues/19) | `todo` | Prometheus metrics or at least Slack “bot heartbeat”; alert on CrashLoop. |
 | P1-7 | **Integration tests on hub** | [#20](https://github.com/yashoza19/opdev-cluster-bot/issues/20) | `todo` | Scripted smoke against disposable cluster (or dry-run + power on fixture). |
+| P1-8 | **Interactive spin wizard (region + profile)** | — | `in progress` | `/opdev-cluster-bot spin` uses Block Kit dropdowns/buttons for version, topology, AWS region, and profile (`base`/`virt`/`ai`) with mapped instance types. |
 
 ### P2 — nice-to-have
 
